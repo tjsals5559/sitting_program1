@@ -3,43 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎒 몽글몽글 우리 반 자리 배치도 🏫</title>
+    <title>🎒 몽글몽글 우리 반 자리 배치도</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="container">
-        <h1>✨ 몽글몽글 우리 반 자리 배치도 ✨</h1>
-        
-        <div class="control-panel">
-            <div class="input-section">
-                <label for="student-list">📝 학생 이름 입력 (쉼표나 공백으로 구분, 총 35명)</label>
-                <textarea id="student-list" rows="3" placeholder="예: 강백호, 서태웅, 송태섭, 정대만, 채치수..."></textarea>
+        <header>
+            <h1>✨ 몽글몽글 우리 반 자리 ✨</h1>
+            <p class="subtitle">모두가 즐거운 우리 반 자리 바꾸기 시간!</p>
+        </header>
+
+        <section class="controls">
+            <div class="input-group">
+                <label for="studentNames">📝 학생 명단 입력 (쉼표나 띄어쓰기로 구분)</label>
+                <textarea id="studentNames" placeholder="예: 강백호, 서태웅, 송태섭..."></textarea>
             </div>
             
-            <div class="settings-section">
-                <div class="setting-item">
-                    <label for="cols-count">🪑 가로 줄(열) 개수 설정:</label>
-                    <select id="cols-count">
-                        <option value="5">5열 배치</option>
-                        <option value="6" selected>6열 배치 (추천)</option>
-                        <option value="7">7열 배치</option>
-                        <option value="8">8열 배치</option>
+            <div class="setting-group">
+                <div class="select-box">
+                    <label for="layoutSelect">📐 배열 스타일 선택</label>
+                    <select id="layoutSelect">
+                        <option value="single">🚶 한 줄 버전 (5열 × 7행)</option>
+                        <option value="pair" selected>👫 짝꿍 버전 (6열 × 6행)</option>
                     </select>
                 </div>
                 <div class="buttons">
-                    <button id="btn-generate" class="btn-primary">🎲 랜덤 자리 배치</button>
-                    <button id="btn-reset-lock" class="btn-secondary">🔓 모든 고정 해제</button>
+                    <button id="shuffleBtn" class="btn-primary">🎲 랜덤 자리 배치</button>
+                    <button id="resetBtn" class="btn-secondary">🔓 모든 고정 해제</button>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="info-text">
-            📌 <strong>사용 팁:</strong> 자리를 섞기 전, 고정하고 싶은 자리가 있다면 해당 칸의 <strong>🔒 고정</strong> 버튼을 누르세요! 그 자리의 학생은 섞이지 않습니다.
-        </div>
-
-        <div class="teacher-desk">👨‍🏫 교 탁</div>
-
-        <div id="classroom" class="classroom-grid"></div>
+        <main class="classroom">
+            <div class="teacher-desk">👨‍🏫 교 탁</div>
+            <div id="seatGrid" class="grid-pair">
+                </div>
+        </main>
+        
+        <footer>
+            <p>📌 <strong>사용 팁:</strong> 자리를 섞기 전, 고정하고 싶은 자리가 있다면 해당 칸의 <strong>고정</strong> 버튼을 누르세요!</p>
+        </footer>
     </div>
 
     <script src="script.js"></script>
