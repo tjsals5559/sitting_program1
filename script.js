@@ -12,32 +12,52 @@ const classroom = document.getElementById('classroom');
 
 studentListInput.value = defaultStudents.join(', ');
 
-// 화면에 책상 그리기 함수
+// 화면에 책상 그리기 함수 (디자인 복구를 위해 짝꿍 모드 통로 처리 방식 변경)
 function renderClassroom() {
     const layout = layoutTypeSelect.value;
-    classroom.className = `classroom-grid ${layout}`; // 클래스 교체로 디자인 변경
-    
-    // 선택된 모드에 따른 총 좌석 수 결정
-    const totalSeats = layout === 'single-5x7' ? 35 : 36;
-    classroom.innerHTML = '';
+    classroom.className = `classroom-grid`; // 클래스는 그냥 grid로 통일
 
-    for (let index = 0; index < totalSeats; index++) {
-        const student = currentStudents[index];
+    // JS에서 열 개수를 직접 제어 (원래 디자인 gap 유지)
+    const cols = layout === 'pair-6x6' ? 6 : 5;
+    classroom.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+    
+    // 짝꿍 모드일 때, 통로 역할을 할 투명한 '가짜 칸'의 인덱스들
+    const pathIndices = cols === 6 ? [2, 4, 8, 10, 14, 16, 20, 22, 26, 28, 32, 34, 38, 40] : [];
+    
+    classroom.innerHTML = '';
+    let studentIdx = 0;
+
+    // 칸을 채웁니다. (짝꿍 모드는 통로 칸을 포함해 조금 더 많이 만듭니다)
+    const totalCells = cols === 6 ? 42 : 35; // 6열일 때는 42칸 중 35~36칸만 사용
+
+    for (let index = 0; index < totalCells; index++) {
         const desk = document.createElement('div');
         desk.classList.add('desk');
+
+        // 짝꿍 모드에서 통로 역할을 할 칸 처리
+        if (pathIndices.includes(index)) {
+            desk.classList.add('fake-path'); // 투명하고 안보이게
+            classroom.appendChild(desk);
+            continue; // 학생 배치 없이 다음 칸으로
+        }
+
+        // 실제 학생 데이터 배치
+        const student = currentStudents[studentIdx];
         
-        if (!student) {
+        // 데이터가 없거나 다 채웠으면 빈 칸으로
+        if (studentIdx >= currentStudents.length || !student) {
             desk.classList.add('empty');
         }
 
-        const isLocked = lockedPositions[index] !== undefined;
+        const isLocked = lockedPositions[studentIdx] !== undefined;
         if (isLocked) {
             desk.classList.add('locked');
         }
 
         const deskNum = document.createElement('div');
         deskNum.classList.add('desk-number');
-        deskNum.innerText = `${index + 1}번 자리`;
+        // 통로를 제외한 실제 학생 순서 번호 표시
+        deskNum.innerText = `${studentIdx + 1}번 자리`;
 
         const nameDiv = document.createElement('div');
         nameDiv.classList.add('student-name');
@@ -48,7 +68,9 @@ function renderClassroom() {
         lockBtn.innerText = isLocked ? '🔒 고정됨' : '🔓 고정';
         
         if (student) {
-            lockBtn.addEventListener('click', () => toggleLock(index, student));
+            const currentIdx = studentIdx; // 클로저 이슈 방지
+            const currentStudent = student;
+            lockBtn.addEventListener('click', () => toggleLock(currentIdx, currentStudent));
         } else {
             lockBtn.style.visibility = 'hidden';
         }
@@ -57,6 +79,7 @@ function renderClassroom() {
         desk.appendChild(nameDiv);
         desk.appendChild(lockBtn);
         classroom.appendChild(desk);
+        studentIdx++; // 학생 데이터 인덱스 증가
     }
 }
 
@@ -69,12 +92,12 @@ function toggleLock(index, studentName) {
     renderClassroom();
 }
 
-// 명단 파싱 및 칸 수(35 or 36) 맞춰주기
+// 명단 파싱 및 칸 수 맞춰주기
 function parseStudentInput(totalSeats) {
     const rawText = studentListInput.value;
     let list = rawText.split(/[,;\n\s]+/).map(s => s.trim()).filter(s => s.length > 0);
     
-    // 총 좌석 수보다 입력된 학생이 적으면 빈자리("")로 채움
+    // 부족하면 빈자리로 채움
     while (list.length < totalSeats) {
         list.push("");
     }
@@ -83,8 +106,7 @@ function parseStudentInput(totalSeats) {
 
 // 랜덤 배치 및 고정 유지 로직
 function generateLayout() {
-    const layout = layoutTypeSelect.value;
-    const totalSeats = layout === 'single-5x7' ? 35 : 36;
+    const totalSeats = 36; // 어떤 모드든 데이터는 36칸으로 관리 (최대값)
     
     const allInputStudents = parseStudentInput(totalSeats);
     const lockedNames = Object.values(lockedPositions);
@@ -131,21 +153,6 @@ btnResetLock.addEventListener('click', () => {
 
 // 셀렉트 박스 바꾸면 배열 디자인과 좌석 수가 즉시 리프레시됩니다.
 layoutTypeSelect.addEventListener('change', () => {
-    const layout = layoutTypeSelect.value;
-    const totalSeats = layout === 'single-5x7' ? 35 : 36;
-    
-    // 바뀐 정원에 맞춰 현재 데이터 크기 조절
-    if (currentStudents.length < totalSeats) {
-        while(currentStudents.length < totalSeats) currentStudents.push("");
-    } else {
-        currentStudents = currentStudents.slice(0, totalSeats);
-    }
-    
-    // 범위를 벗어난 고정 데이터 삭제
-    Object.keys(lockedPositions).forEach(idx => {
-        if (parseInt(idx) >= totalSeats) delete lockedPositions[idx];
-    });
-
     renderClassroom();
 });
 
