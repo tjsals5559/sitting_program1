@@ -24,127 +24,112 @@ body {
     padding: 30px;
     border-radius: 30px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    border: 3px dashed var(--primary-color);
 }
 
 header { text-align: center; margin-bottom: 20px; }
 
 h1 { 
     font-family: 'Nanum Pen Script', cursive; 
-    font-size: 3rem; 
+    font-size: 3.5rem; 
     color: var(--primary-color);
     margin: 0;
+    text-shadow: 2px 2px 0px #fff3f4;
 }
 
+.subtitle { font-size: 1.1rem; color: #888; margin-top: 5px; }
+
 .controls {
-    background: #fff9f9;
+    background: #f0f7f4;
     padding: 20px;
     border-radius: 20px;
-    border: 2px dashed var(--primary-color);
+    border: 2px solid #cce3de;
     margin-bottom: 30px;
+}
+
+.input-group label, .setting-group label {
+    display: block; font-weight: bold; margin-bottom: 8px; color: #6b9080;
 }
 
 textarea {
     width: 100%;
-    height: 60px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    padding: 10px;
+    height: 70px;
+    border-radius: 12px;
+    border: 2px solid #e0eccf;
+    padding: 12px;
     margin-top: 5px;
     resize: none;
+    font-size: 0.95rem;
+    outline: none;
 }
+textarea:focus { border-color: #a3b18a; }
 
 .setting-group {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-top: 15px;
-    flex-wrap: wrap;
-    gap: 10px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-top: 15px; flex-wrap: wrap; gap: 10px;
+}
+
+select {
+    padding: 8px 12px; border: 2px solid #cce3de; border-radius: 8px;
+    font-size: 1rem; outline: none; background: white; cursor: pointer;
 }
 
 .buttons { display: flex; gap: 10px; }
 
 button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
+    padding: 10px 20px; border: none; border-radius: 12px;
+    cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.2s;
 }
+button:active { transform: scale(0.95); }
 
-.btn-primary { background: var(--primary-color); color: white; }
-.btn-primary:hover { background: #ff9eaa; transform: translateY(-2px); }
+.btn-primary { background: var(--primary-color); color: white; box-shadow: 0 4px 0 #ee8b85; }
+.btn-primary:hover { background: #ff9eaa; }
 
-.btn-secondary { background: #eee; color: #777; }
+.btn-secondary { background: var(--secondary-color); color: white; box-shadow: 0 4px 0 #7caee0; }
+.btn-secondary:hover { background: #89bdf0; }
 
 .classroom {
-    position: relative;
-    padding: 40px 20px;
-    background: #fdfdfd;
-    border-radius: 20px;
+    position: relative; padding: 40px 20px; background: #fdfdfd; border-radius: 20px;
+    border: 2px solid #f0f0f0;
 }
 
 .teacher-desk {
-    width: 150px;
-    height: 40px;
-    background: var(--secondary-color);
-    margin: 0 auto 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
+    width: 160px; height: 45px; background: #d8b18a; margin: 0 auto 40px;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: bold; box-shadow: 0 4px 0 #b58d63; font-size: 1.1rem;
 }
 
-/* 배열 관련 핵심 CSS */
-#seatGrid {
-    display: grid;
-    gap: 15px;
-    justify-content: center;
-}
+/* 책상 격자 설정 */
+#seatGrid { display: grid; gap: 15px; justify-content: center; transition: 0.3s; }
 
+/* 한줄 5열 */
 .grid-single { grid-template-columns: repeat(5, 1fr); }
 
-/* 짝꿍 버전 디자인: 2개씩 묶임 */
-.grid-pair { 
-    grid-template-columns: repeat(6, 1fr); 
+/* 짝꿍 6열 (가운데 통로 느낌) */
+.grid-pair { grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.grid-pair .seat:nth-child(6n+2), .grid-pair .seat:nth-child(6n+4) {
+    margin-right: 25px; /* 짝꿍 사이를 띄워주는 핵심 코드 */
 }
-.grid-pair .seat:nth-child(2n) { margin-right: 20px; }
-.grid-pair .seat:nth-child(2n+2) { margin-right: 0; }
-.grid-pair .seat:nth-child(6n) { margin-right: 0; }
 
 .seat {
-    aspect-ratio: 1/1;
-    background: var(--accent-color);
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    transition: 0.3s;
-    border: 2px solid transparent;
+    width: 85px; height: 95px; background: white; border-radius: 12px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 2px solid #e2ece9; transition: 0.2s;
 }
 
-.seat.locked {
-    background: #d1ffd1;
-    border-color: #88d488;
+.seat.empty { background: #f5f5f5; border: 2px dashed #ccc; }
+.seat.empty .student-name { color: #bbb; }
+
+.seat.locked { background: #e8f5e9; border-color: #81c784; }
+
+.seat-num { font-size: 0.75rem; color: #a0a0a0; margin-bottom: 5px; }
+.student-name { font-size: 1.1rem; font-weight: bold; color: #333; }
+
+.lock-btn {
+    margin-top: 8px; padding: 3px 6px; font-size: 0.7rem; border-radius: 5px;
+    border: 1px solid #ddd; background: #f0f0f0; cursor: pointer; color: #666;
 }
+.seat.locked .lock-btn { background: #4caf50; color: white; border-color: #4caf50; }
 
-.student-name { font-size: 0.9rem; font-weight: bold; }
-
-.lock-icon {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    opacity: 0.5;
-}
-
-.seat.locked .lock-icon { opacity: 1; color: #2ecc71; }
-
-footer { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #999; }
+footer { text-align: center; margin-top: 20px; font-size: 0.9rem; color: #7f8c8d; }
