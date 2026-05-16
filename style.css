@@ -1,155 +1,237 @@
-// 초기 35명 가상 데이터 생성
-const defaultStudents = Array.from({length: 35}, (_, i) => `학생 ${i + 1}`);
+/* --- [선생님의 원래 감성 복구: 귀여운 폰트 및 파스텔톤] --- */
+@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Nanum+Gothic:wght@400;700&display=swap');
 
-let currentStudents = [...defaultStudents];
-let lockedPositions = {}; // { 의자번호: "학생이름" }
-
-const studentListInput = document.getElementById('student-list');
-const layoutTypeSelect = document.getElementById('layout-type');
-const btnGenerate = document.getElementById('btn-generate');
-const btnResetLock = document.getElementById('btn-reset-lock');
-const classroom = document.getElementById('classroom');
-
-studentListInput.value = defaultStudents.join(', ');
-
-// 화면에 책상 그리기 함수
-function renderClassroom() {
-    const layout = layoutTypeSelect.value;
-    classroom.className = `classroom-grid ${layout}`; // 클래스 교체로 디자인 변경
-    
-    // 선택된 모드에 따른 총 좌석 수 결정
-    const totalSeats = layout === 'single-5x7' ? 35 : 36;
-    classroom.innerHTML = '';
-
-    for (let index = 0; index < totalSeats; index++) {
-        const student = currentStudents[index];
-        const desk = document.createElement('div');
-        desk.classList.add('desk');
-        
-        if (!student) {
-            desk.classList.add('empty');
-        }
-
-        const isLocked = lockedPositions[index] !== undefined;
-        if (isLocked) {
-            desk.classList.add('locked');
-        }
-
-        const deskNum = document.createElement('div');
-        deskNum.classList.add('desk-number');
-        deskNum.innerText = `${index + 1}번 자리`;
-
-        const nameDiv = document.createElement('div');
-        nameDiv.classList.add('student-name');
-        nameDiv.innerText = student || '(빈자리)';
-
-        const lockBtn = document.createElement('button');
-        lockBtn.classList.add('lock-btn');
-        lockBtn.innerText = isLocked ? '🔒 고정됨' : '🔓 고정';
-        
-        if (student) {
-            lockBtn.addEventListener('click', () => toggleLock(index, student));
-        } else {
-            lockBtn.style.visibility = 'hidden';
-        }
-
-        desk.appendChild(deskNum);
-        desk.appendChild(nameDiv);
-        desk.appendChild(lockBtn);
-        classroom.appendChild(desk);
-    }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Nanum Gothic', sans-serif; /* 기본 폰트 */
 }
 
-function toggleLock(index, studentName) {
-    if (lockedPositions[index] !== undefined) {
-        delete lockedPositions[index];
-    } else {
-        lockedPositions[index] = studentName;
-    }
-    renderClassroom();
+body {
+    background-color: #f9f7f1; /* 따뜻한 아이보리 배경 */
+    color: #4a4a4a;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
 }
 
-// 명단 파싱 및 칸 수(35 or 36) 맞춰주기
-function parseStudentInput(totalSeats) {
-    const rawText = studentListInput.value;
-    let list = rawText.split(/[,;\n\s]+/).map(s => s.trim()).filter(s => s.length > 0);
-    
-    // 총 좌석 수보다 입력된 학생이 적으면 빈자리("")로 채움
-    while (list.length < totalSeats) {
-        list.push("");
-    }
-    return list;
+.container {
+    width: 100%;
+    max-width: 1000px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 24px;
+    box-shadow: 0 8px 24px rgba(229, 219, 195, 0.6);
+    border: 3px dashed #e2d4b7; /* 원래의 점선 테두리 */
 }
 
-// 랜덤 배치 및 고정 유지 로직
-function generateLayout() {
-    const layout = layoutTypeSelect.value;
-    const totalSeats = layout === 'single-5x7' ? 35 : 36;
-    
-    const allInputStudents = parseStudentInput(totalSeats);
-    const lockedNames = Object.values(lockedPositions);
-    
-    // 섞을 학생들 필터링
-    let flexibleStudents = allInputStudents.filter(name => !lockedNames.includes(name));
-
-    // Fisher-Yates 셔플
-    for (let i = flexibleStudents.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [flexibleStudents[i], flexibleStudents[j]] = [flexibleStudents[j], flexibleStudents[i]];
-    }
-
-    const nextStudents = new Array(totalSeats).fill("");
-    
-    // 고정 자리 먼저 배치
-    for (let i = 0; i < totalSeats; i++) {
-        if (lockedPositions[i] !== undefined) {
-            if (allInputStudents.includes(lockedPositions[i])) {
-                nextStudents[i] = lockedPositions[i];
-            } else {
-                delete lockedPositions[i]; // 입력창에 없는 학생이면 고정 해제
-            }
-        }
-    }
-
-    // 남은 자리 배치
-    let flexIdx = 0;
-    for (let i = 0; i < totalSeats; i++) {
-        if (nextStudents[i] === "") {
-            nextStudents[i] = flexibleStudents[flexIdx] || "";
-            flexIdx++;
-        }
-    }
-
-    currentStudents = nextStudents;
-    renderClassroom();
+h1 {
+    font-family: 'Gamja Flower', cursive; /* 원래의 귀여운 제목 폰트 */
+    text-align: center;
+    font-size: 2.5rem;
+    color: #ff8b94; /* 따뜻한 핑크 */
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 0px #fff3f4;
 }
 
-btnResetLock.addEventListener('click', () => {
-    lockedPositions = {};
-    renderClassroom();
-});
+/* --- [제어판 및 버튼 디자인 복구] --- */
+.control-panel {
+    background-color: #f0f7f4; /* 부드러운 그린 톤 */
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 2px solid #cce3de;
+}
 
-// 셀렉트 박스 바꾸면 배열 디자인과 좌석 수가 즉시 리프레시됩니다.
-layoutTypeSelect.addEventListener('change', () => {
-    const layout = layoutTypeSelect.value;
-    const totalSeats = layout === 'single-5x7' ? 35 : 36;
-    
-    // 바뀐 정원에 맞춰 현재 데이터 크기 조절
-    if (currentStudents.length < totalSeats) {
-        while(currentStudents.length < totalSeats) currentStudents.push("");
-    } else {
-        currentStudents = currentStudents.slice(0, totalSeats);
-    }
-    
-    // 범위를 벗어난 고정 데이터 삭제
-    Object.keys(lockedPositions).forEach(idx => {
-        if (parseInt(idx) >= totalSeats) delete lockedPositions[idx];
-    });
+.input-section label, .setting-item label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #6b9080;
+}
 
-    renderClassroom();
-});
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0eccf;
+    border-radius: 12px;
+    resize: none;
+    font-size: 0.95rem;
+    outline: none;
+    transition: 0.3s;
+}
 
-btnGenerate.addEventListener('click', generateLayout);
+textarea:focus {
+    border-color: #a3b18a;
+}
 
-// 초기 실행
-renderClassroom();
+.settings-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+select {
+    padding: 8px 12px;
+    border: 2px solid #cce3de;
+    border-radius: 8px;
+    background-color: white;
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background-color: #ffaaa5; /* 원래 파스텔 핑크 */
+    color: white;
+    box-shadow: 0 4px 0 #ee8b85;
+}
+
+.btn-primary:hover {
+    background-color: #ff8b94;
+}
+
+.btn-secondary {
+    background-color: #a8dadc; /* 원래 파스텔 블루 */
+    color: #1d3557;
+    box-shadow: 0 4px 0 #457b9d;
+}
+
+.btn-secondary:hover {
+    background-color: #457b9d;
+    color: white;
+}
+
+.info-text {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin-bottom: 25px;
+}
+
+.teacher-desk {
+    width: 160px;
+    height: 45px;
+    background-color: #d8b18a; /* 원래 교탁 색상 */
+    color: white;
+    margin: 0 auto 35px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border-radius: 8px;
+    box-shadow: 0 4px 0 #b58d63;
+}
+
+/* --- [핵심: 정렬 및 배열 디자인 복구] --- */
+/* classroom-grid는 이제 js에서 선택된 옵션에 따라 grid-template-columns를 직접 제어받습니다. */
+.classroom-grid {
+    display: grid;
+    /* gap: 15px; -> 선생님께서 마음에 들어하신 원래 디자인 gap */
+    gap: 15px; 
+    padding: 10px;
+    justify-content: center; /* 격자 전체를 가운데로 */
+    transition: all 0.3s ease; /* 배열 변경 시 부드럽게 */
+}
+
+/* [추가된 짝꿍 모드]에서는 JS가 자동으로 열 개수를 6으로 만듭니다. 
+   짝꿍 느낌을 내기 위해 통로 대신, JS에서 특정 인덱스마다 가짜 통로 칸을 넣어주는 방식으로 디자인 일관성을 유지할 것입니다.
+   선생님은 이 CSS는 그대로 두시면 됩니다. */
+
+/* --- [개별 책상 디자인 복구 및 강화] --- */
+.desk {
+    background-color: #fff;
+    border: 2px solid #e2ece9; /* 원래의 깔끔한 테두리 */
+    border-radius: 14px;
+    padding: 12px 8px;
+    text-align: center;
+    min-height: 95px; /* 높이 약간 조정 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    position: relative;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.desk.empty {
+    background-color: #f5f5f5;
+    border: 2px dashed #ccc;
+}
+.desk.empty .student-name {
+    color: #bbb;
+    font-style: italic;
+}
+
+/* 짝꿍 모드 등에서 가짜 통로로 사용되는 투명 칸 */
+.desk.fake-path {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.desk-number {
+    font-size: 0.75rem;
+    color: #a0a0a0;
+    margin-bottom: 4px;
+}
+
+.student-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+    margin: 5px 0;
+}
+
+.lock-btn {
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    cursor: pointer;
+    color: #666;
+    transition: 0.2s;
+}
+
+.lock-btn:hover {
+    background: #e0e0e0;
+}
+
+/* 고정된 상태 복구 */
+.desk.locked {
+    background-color: #e8f5e9; /* 부드러운 그린 */
+    border-color: #81c784;
+}
+
+.desk.locked .lock-btn {
+    background-color: #4caf50;
+    color: white;
+    border-color: #4caf50;
+}
