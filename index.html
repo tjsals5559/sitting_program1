@@ -12,18 +12,16 @@
         
         <div class="control-panel">
             <div class="input-section">
-                <label for="student-list">📝 학생 이름 입력 (쉼표나 공백으로 구분, 총 35명)</label>
-                <textarea id="student-list" rows="3" placeholder="예: 강백호, 서태웅, 송태섭, 정대만, 채치수..."></textarea>
+                <label for="student-list">📝 학생 이름 입력 (쉼표나 공백으로 구분, 총 35~36명)</label>
+                <textarea id="student-list" rows="3" placeholder="예: 강백호, 서태웅, 송태섭, 정대만..."></textarea>
             </div>
             
             <div class="settings-section">
                 <div class="setting-item">
-                    <label for="cols-count">🪑 가로 줄(열) 개수 설정:</label>
-                    <select id="cols-count">
-                        <option value="5">5열 배치</option>
-                        <option value="6" selected>6열 배치 (추천)</option>
-                        <option value="7">7열 배치</option>
-                        <option value="8">8열 배치</option>
+                    <label for="layout-type">🪑 교실 배열 스타일 선택:</label>
+                    <select id="layout-type">
+                        <option value="single-5x7">🚶 한 줄 버전 (5열 × 7행)</option>
+                        <option value="pair-6x6" selected>👫 짝꿍 버전 (6열 × 6행)</option>
                     </select>
                 </div>
                 <div class="buttons">
@@ -39,7 +37,7 @@
 
         <div class="teacher-desk">👨‍🏫 교 탁</div>
 
-        <div id="classroom" class="classroom-grid"></div>
+        <div id="classroom" class="classroom-grid pair-6x6"></div>
     </div>
 
     <script src="script.js"></script>
